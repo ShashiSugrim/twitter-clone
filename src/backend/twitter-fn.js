@@ -167,3 +167,47 @@ export async function addLike(username, tweet) {
         });
     }
 }
+
+export async function addFollow(userA, userB) {
+    const userARef = db.collection('users').doc(userA);
+    const userBRef = db.collection('users').doc(userB);
+
+    // Check if the users exist
+    const [userADoc, userBDoc] = await Promise.all([userARef.get(), userBRef.get()]);
+    if(!userADoc.exists) {
+        console.log("User does not exist: " + userA);
+        return;
+    }
+
+    if(!userBDoc.exists) {
+        console.log("User does not exist: " + userB);
+        return;
+    }
+
+    const userAData = userADoc.data();
+    const userBData = userBDoc.data();
+
+    // Begin a batch write to execute multiple operations atomically
+    const batch = db.batch();
+
+    // Check if userA already follows userB
+    if (userAData.following && userAData.following.includes(userB)) {
+        // If userA already follows userB, unfollow it
+        const updatedFollowingA = userAData.following.filter(user => user !== userB); // make a new array with all users, except for userB
+        const updatedFollowersB = userBData.followers.filter(user => user !== userA);
+
+        batch.update(userARef, { following: updatedFollowingA });
+        batch.update(userBRef, { followers: updatedFollowersB });
+    } else {
+        // If userA doesn't follow userB, follow it
+        // if we dont currently have a following list, we will just only have userB and userA as the values for the respective lists
+        const updatedFollowingA = userAData.following? [...userAData.following, userB] : [userB];
+        const updatedFollowersB = userBData.following? [...userBData.followers, userA]: [userA];
+
+        batch.update(userARef, { following: updatedFollowingA });
+        batch.update(userBRef, { followers: updatedFollowersB });
+    }
+
+    // Commit the batch write
+    await batch.commit();
+}
