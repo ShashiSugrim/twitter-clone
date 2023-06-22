@@ -211,3 +211,42 @@ export async function addFollow(userA, userB) {
     // Commit the batch write
     await batch.commit();
 }
+
+export async function retweet(username, tweet) {
+    const userRef = db.collection('users').doc(username);
+    const tweetRef = db.collection('tweets').doc(tweet);
+    // Check if the user and tweet exist
+    const [userDoc, tweetDoc] = await Promise.all([userRef.get(), tweetRef.get()]);
+    if(!userDoc.exists) {
+        console.log("User does not exist: " + username);
+        return;
+    }
+
+    if(!tweetDoc.exists) {
+        console.log("Tweet does not exist: " + tweet);
+        return;
+    }
+
+    const tweetData = tweetDoc.data();
+    const userData = userDoc.data();
+
+    // Ensure the tweet is not the user's own tweet
+    if (username === tweetData.username) {
+        console.log("User cannot retweet their own tweet");
+        return;
+    }
+
+    // Check if the user has already retweeted the tweet
+    if (userData.retweets && userData.retweets.includes(tweet)) {
+        console.log("User has already retweeted this tweet");
+        return;
+    } else {
+        // If the user has not retweeted the tweet, retweet it
+        const updatedRetweets = userData.retweets ? [...userData.retweets, tweet] : [tweet];
+
+        await userRef.update({
+            retweets: updatedRetweets
+        });
+    }
+}
+
