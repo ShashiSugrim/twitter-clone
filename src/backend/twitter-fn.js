@@ -73,7 +73,8 @@ export async function addTweet(username, data)
             likeCt: 0,
             retweets: [],
             time: new Date().toISOString(),
-            topic: "undef"
+            topic: "undef",
+            likes: []
         }
     )
     await docRef.set(
@@ -125,4 +126,44 @@ export async function deleteTweet(username, tweetNumber) {
 
     // Commit the batch write
     await batch.commit();
+}
+
+export async function addLike(username, tweet) {
+    const userRef = db.collection('users').doc(username);
+    const tweetRef = db.collection('tweets').doc(tweet);
+
+    // Check if the user and tweet exist
+    const [userDoc, tweetDoc] = await Promise.all([userRef.get(), tweetRef.get()]);
+    if(!userDoc.exists) {
+        console.log("User does not exist: " + username);
+        return;
+    }
+
+    if(!tweetDoc.exists) {
+        console.log("Tweet does not exist: " + tweet);
+        return;
+    }
+
+    const tweetData = tweetDoc.data();
+
+    // Check if the user has already liked the tweet
+    if (tweetData.likes && tweetData.likes.includes(username)) {
+        // If the user has already liked the tweet, unlike it
+        const updatedLikes = tweetData.likes.filter(user => user !== username);
+        const updatedLikeCt = updatedLikes.length;
+
+        await tweetRef.update({
+            likes: updatedLikes,
+            likeCt: updatedLikeCt
+        });
+    } else {
+        // If the user has not liked the tweet, like it
+        const updatedLikes = tweetData.likes ? [...tweetData.likes, username] : [username];
+        const updatedLikeCt = updatedLikes.length;
+
+        await tweetRef.update({
+            likes: updatedLikes,
+            likeCt: updatedLikeCt
+        });
+    }
 }
