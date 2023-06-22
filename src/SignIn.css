@@ -1,0 +1,177 @@
+.container {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    border-radius: 45px;
+    width: 1000px;
+  }
+  
+  .popup {
+    width: 400px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    align-content: center;
+  }
+
+  .bird{
+    display: contents;
+    align-content: center;
+    width:20px;
+    height: auto; 
+    margin-right: 10px;
+  }
+  .intro{
+    font-family:Arial, Helvetica, sans-serif;
+    font-size: 30px;
+  }
+  h2 {
+    text-align: center;
+  }
+  
+  form {
+    margin-bottom: 20px;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 10px;
+  }
+  
+  input[type="email"] {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.5rem;
+  font-size: 1rem;
+  padding:10px;
+  width: 300px;
+  border: 1.5px solid #ccc;
+  border-radius: 8px;
+  height:60px;
+  }
+
+  .signin-google{
+    background-image: url("./googlelogo.png");
+    background-repeat: no-repeat;
+    background-position:left center;
+    background-size: contain;
+    padding-left: 30px;
+    background-color: white;
+    border: 2px solid #ccc;
+    border-radius: 25px;
+    display: inline-block;
+    font-size: 25px;
+    background-size: 28px 28px;
+    text-align: center;
+    font-size:medium;
+    padding:10px;
+    width: 300px;
+  }
+  .signin-google:hover{
+        background-color:whitesmoke;
+  }
+  .signin-apple{
+    background-image: url("./applelogo.png");
+    background-repeat: no-repeat;
+    background-position:left center;
+    background-size: contain;
+    padding:10px;
+    background-color: white;
+    border: 2px solid #ccc;
+    border-radius: 25px;
+    display: inline-block;
+    font-size: 25px;
+    background-size: 28px 28px;
+    text-align: center; 
+    font-size:medium; 
+    size: 70px 10px;
+    width: 300px;
+  }
+  .signin-apple:hover{
+    background-color:whitesmoke;
+}
+
+  .next-button
+  {
+    padding:8px;
+    background-color: black;
+    color:white;
+    display: inline-block;
+    border: 2px solid black;
+    border-radius: 25px;
+    font-size: 25px;
+    background-size: 28px 28px;
+    text-align: center; 
+    font-size:medium; 
+    size: 70px 10px;
+    padding:10px;
+    width: 300px;
+  }
+
+  .forgot-button
+  {
+      padding:8px;
+      background-color:white;
+      display: inline-block;
+      border: 2px solid #ccc;
+      border-radius: 25px;
+      font-size: 25px;
+      background-size: 28px 28px;
+      text-align: center; 
+      font-size:medium; 
+      size: 70px 10px;
+      padding:10px;
+      width: 300px;
+  }
+  .forgot-button:hover{
+    background-color:whitesmoke;
+}
+
+.open-popup {
+  align-items: center;
+  background-color:skyblue;
+  border: 0;
+  border-radius: 100px;
+  box-sizing: border-box;
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: -apple-system, system-ui, system-ui, "Segoe UI", Roboto, "Helvetica Neue", "Fira Sans", Ubuntu, Oxygen, "Oxygen Sans", Cantarell, "Droid Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Lucida Grande", Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  justify-content: center;
+  line-height: 20px;
+  max-width: 480px;
+  min-height: 40px;
+  min-width: 0px;
+  overflow: hidden;
+  padding: 0px;
+  padding-left: 20px;
+  padding-right: 20px;
+  text-align: center;
+  touch-action: manipulation;
+  transition: background-color 0.167s cubic-bezier(0.4, 0, 0.2, 1) 0s, box-shadow 0.167s cubic-bezier(0.4, 0, 0.2, 1) 0s, color 0.167s cubic-bezier(0.4, 0, 0.2, 1) 0s;
+  user-select: none;
+  -webkit-user-select: none;
+  vertical-align: middle;
+}
+
+.open-popup:hover,
+.open-popup:focus { 
+  background-color: #16437E;
+  color: #ffffff;
+}
+
+.open-popup:active {
+  background: #09223b;
+  color: rgb(255, 255, 255, .7);
+}
+
+  .a{
+    color:deepskyblue;
+  }
+  
+  
