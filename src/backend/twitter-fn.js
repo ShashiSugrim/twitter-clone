@@ -67,14 +67,16 @@ export async function addTweet(username, data)
     var currTweets = userData["tweets"];
     currTweets.push('/tweets/' + username + numTweetVar);
     const tweetRef = db.collection('tweets').doc(username + numTweetVar);
+    let topicList = await getTopics(data);
     await tweetRef.set(
         {
             data: data,
             likeCt: 0,
             retweets: [],
             time: new Date().toISOString(),
-            topic: "undef",
-            likes: []
+            topics: topicList,
+            likes: [],
+        
         }
     )
     await docRef.set(
@@ -251,7 +253,7 @@ export async function retweet(username, tweet) {
 }
 
 
-export async function query(tweet, topics=["Music", "Fashion", "Tech", "Sports", "Finance", "Education", "Random"]) {
+export async function getTopics(tweet, topics=["Music", "Fashion", "Tech", "Sports", "Finance", "Education", "Random"]) {
     /*
 
        query("I cant believe drake dropped a new album!", ["music", "sports", "fashion"]).then((response) => {
@@ -275,8 +277,20 @@ export async function query(tweet, topics=["Music", "Fashion", "Tech", "Sports",
         }
     );
     const result = await response.json()
-    console.log("result is " + JSON.stringify(result));
-    return result;
+    // console.log("result data " + JSON.stringify(result));
+    // console.log("result scores are  " + JSON.stringify(result["scores"]));
+    let hTopics = []
+    for(let i=0;i<7;i++)
+    {
+        if(parseFloat((JSON.stringify(result["scores"][i])) * 100) > 50)
+        {
+            // console.log("the tweet is " + tweet);
+            // console.log("but the topic here is " + JSON.stringify(result["labels"][i]));
+            hTopics.push(JSON.stringify(result["labels"][i]));
+        }
+    }
+    // console.log("topics are : " + hTopics.toString() );
+    return hTopics;
 }
 
 
