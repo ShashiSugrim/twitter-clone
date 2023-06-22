@@ -250,3 +250,34 @@ export async function retweet(username, tweet) {
     }
 }
 
+
+export async function query(tweet, topics=["Music", "Fashion", "Tech", "Sports", "Finance", "Education", "Random"]) {
+    /*
+
+       query("I cant believe drake dropped a new album!", ["music", "sports", "fashion"]).then((response) => {
+    console.log(JSON.stringify(response));
+   });
+
+    */
+    let data = {
+        "inputs": tweet, "parameters": 
+        {
+          "candidate_labels": topics
+        }
+    }
+    let API_TOKEN = "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";
+    const response = await fetch(
+        "https://api-inference.huggingface.co/models/facebook/bart-large-mnli",
+        {
+            headers: { Authorization: `Bearer ${API_TOKEN}` },
+            method: "POST",
+            body: JSON.stringify(data),
+        }
+    );
+    const result = await response.json()
+    console.log("result is " + JSON.stringify(result));
+    return result;
+}
+
+
+
