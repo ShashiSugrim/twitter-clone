@@ -24,7 +24,7 @@ export async function addUser(firstName, lastName, topics, username, password)
         {
             console.log("these are the tweets: " + JSON.stringify(doc.data()["tweets"]));
         }
-        return;
+        return false;
     }
     var insertData = 
     {
@@ -42,7 +42,7 @@ export async function addUser(firstName, lastName, topics, username, password)
     }
 
     await docRef.set(insertData);
-
+    return true;
 }
 
 export async function addTweet(username, data)
@@ -89,6 +89,22 @@ export async function addTweet(username, data)
             merge: true
         }
     )
+
+    var tweetName = username + numTweetVar;
+    const batch = db.batch();
+    for(let topic of topicList){
+        const topicRef = db.collection('topics').doc(topic);
+        batch.set(
+            topicRef,
+            {
+                tweets: firebase.firestore.FieldValue.arrayUnion(tweetName)
+            },
+            {
+                merge: true
+            }
+        );
+    }
+    await batch.commit();
 }
 
 export async function deleteTweet(username, tweetNumber) {
@@ -284,11 +300,10 @@ export async function getTopics(tweet, topics=["Music", "Fashion", "Tech", "Spor
     {
         if(parseFloat((JSON.stringify(result["scores"][i])) * 100) > 50)
         {
-            // console.log("the tweet is " + tweet);
-            // console.log("but the topic here is " + JSON.stringify(result["labels"][i]));
-            hTopics.push(JSON.stringify(result["labels"][i]));
+            hTopics.push(result["labels"][i]);
         }
     }
+    
     // console.log("topics are : " + hTopics.toString() );
     return hTopics;
 }
