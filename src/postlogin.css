@@ -1,0 +1,94 @@
+
+  .bird {
+    width: 50px;
+    height: auto;
+    margin-bottom: 20px;
+    margin-left: -300px;
+  }
+  .home-sidebar {
+    text-align: left;
+    margin-left: 10px;
+    position: relative;
+  }
+  
+  .home {
+    width: 40px;
+    height: 40px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 10px;
+    margin-left: -220px;
+  }
+  
+  .home-sidebar,
+  .home {
+    display: inline-block;
+    vertical-align: middle;
+  }
+  
+  .book-sidebar {
+    text-align: left;
+    margin-left: 10px;
+  }
+  
+  .bookmark {
+    width: 38px;
+    height: 28px;
+    display: block;
+    margin-top: 10px;
+    margin-left: -156px;
+  }
+  
+  .book-sidebar,
+  .bookmark {
+    display: inline-block;
+    vertical-align: middle;
+
+  }
+  .profile-sidebar {
+    text-align: left;
+    margin-left: 10px;
+  }
+  
+  .profile {
+    width: 30px;
+    height: 35px;
+    display: block;
+    margin-top: 10px;
+    margin-left: -205px;
+  }
+  
+  .profile-sidebar,
+  .profile {
+    display: inline-block;
+    vertical-align: middle;
+  }
+  .tweet{
+      padding:8px;
+      display: inline-block;
+      border: 2px solid #1da1f2;
+      border-radius: 25px;
+      font-size: 25px;
+      background-size: 28px 28px;
+      text-align: center; 
+      font-size:large; 
+      font-weight: bolder;
+      color:white;
+      size: 70px 10px;
+      padding:10px;
+      width: 250px;
+      margin-left: -67px;
+      height:50px;
+      background-color: #1da1f2;
+  }
+  
+  .search-bar-container {
+    padding-top: 3vh;
+    width: 40%;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 200px;
+}
+  
