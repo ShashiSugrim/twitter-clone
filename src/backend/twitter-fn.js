@@ -308,5 +308,57 @@ export async function getTopics(tweet, topics=["Music", "Fashion", "Tech", "Spor
     return hTopics;
 }
 
+export async function getHomepage(username){
+    // Get user data
+    const userRef = db.collection('users').doc(username);
+    const userDoc = await userRef.get();
+    if(!userDoc.exists) {
+        console.log("User does not exist: " + username);
+        return;
+    }
+    const userData = userDoc.data();
+    
+    let homepageTweets = [];
+    let seenTweetNames = new Set(); // Keep track of tweet names we've already added
 
+    const addTweetNameIfUnique = (tweetNameWithPath) => {
+        // Remove the '/tweets/' prefix from the tweet name
+        let tweetName = tweetNameWithPath.replace('/tweets/', '');
 
+        // If we've already seen this tweet, skip it
+        if (seenTweetNames.has(tweetName)) return;
+        // Otherwise, add it to the list
+        homepageTweets.push(tweetName);
+        seenTweetNames.add(tweetName); // Mark this tweet as seen
+    };
+
+    // Fetch tweets related to the topics the user follows
+    for(let topic of userData.topics){
+        const topicRef = db.collection('topics').doc(topic);
+        const topicDoc = await topicRef.get();
+        if(topicDoc.exists) {
+            const topicData = topicDoc.data();
+            for(let tweetName of topicData.tweets){
+                addTweetNameIfUnique(tweetName);
+            }
+        }
+    }
+
+    // Fetch tweets and retweets from the users the user follows
+    for(let followedUser of userData.following){
+        const followedUserRef = db.collection('users').doc(followedUser);
+        const followedUserDoc = await followedUserRef.get();
+        if(followedUserDoc.exists) {
+            const followedUserData = followedUserDoc.data();
+            for(let tweetName of followedUserData.tweets){
+                addTweetNameIfUnique(tweetName);
+            }
+            for(let retweetName of followedUserData.retweets){
+                addTweetNameIfUnique(retweetName);
+            }
+        }
+    }
+
+    console.log("homepage tweets are: " + JSON.stringify(homepageTweets));
+    return homepageTweets;
+}
