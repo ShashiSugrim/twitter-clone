@@ -393,3 +393,43 @@ export async function getExplore() {
     console.log("Explore page is " + JSON.stringify(exploreTweets));
     return exploreTweets;
 }
+
+export async function getTweetData(tweets) {
+    const tweetData = [];
+
+    // Go through each tweet
+    for (let i = 0; i < tweets.length; i++) {
+        const tweetRef = db.collection('tweets').doc(tweets[i]);
+        const doc = await tweetRef.get();
+        
+        if (doc.exists) {
+            const data = doc.data();
+
+            // Extract the name of the user who posted the tweet
+            let username = tweets[i].replace(/[0-9]/g, '');
+            username = username || "N/A";
+
+            // Extract and format the time the tweet was posted
+            let timestamp = new Date(data.time);
+            let timePosted = `${timestamp.getMonth() + 1}/${timestamp.getDate()}/${timestamp.getFullYear()} ${timestamp.getHours()}:${timestamp.getMinutes()}pm`;
+            timePosted = timePosted || "N/A";
+
+            // Extract the number of likes on the tweet
+            let likes = data.likeCt !== undefined ? data.likeCt : "N/A";
+
+            // Extract the topic of the tweet, remove any extra quotes or slashes
+            let topics = Array.isArray(data.topics) ? data.topics.map(topic => topic.replace(/['"\\]+/g, '')).join(', ') : "N/A";
+
+            // Extract the text of the tweet
+            let text = data.data;
+            text = text || "N/A";
+
+            // Add the tweet's data to the array
+            tweetData.push({username, timePosted, likes, topics, text});
+        } else {
+            console.log('No such document!');
+        }
+    }
+
+    return tweetData;
+}
