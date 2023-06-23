@@ -362,3 +362,34 @@ export async function getHomepage(username){
     console.log("homepage tweets are: " + JSON.stringify(homepageTweets));
     return homepageTweets;
 }
+
+export async function getExplore() {
+    // Get reference to tweets collection
+    const tweetsRef = db.collection('tweets');
+
+    // Get all tweets
+    const snapshot = await tweetsRef.get();
+
+    // currently inefficient as it fetches all the tweets into memory then chooses 15 random ones
+    // Put all tweet names in an array
+    const allTweets = [];
+    snapshot.forEach(doc => {
+        allTweets.push(doc.id);
+    });
+
+    // If there are less than or equal to 15 tweets, return all of them
+    if (allTweets.length <= 15) {
+        return allTweets;
+    }
+
+    // If there are more than 15 tweets, pick 15 at random
+    const exploreTweets = [];
+    for (let i = 0; i < 15; i++) {
+        const randomIndex = Math.floor(Math.random() * allTweets.length);
+        exploreTweets.push(allTweets[randomIndex]);
+        // Remove selected tweet from the allTweets array to avoid picking it again
+        allTweets.splice(randomIndex, 1);
+    }
+    console.log("Explore page is " + JSON.stringify(exploreTweets));
+    return exploreTweets;
+}
