@@ -98,9 +98,34 @@
   cursor: pointer;
 }
 
+.explore-side{
+  text-align: left;
+  margin-left: 10px;
+}
+.explore-side2{
+  text-align: left;
+}
 .new-to-twitter-box button:hover {
   opacity: 0.9;
 }
 .sign-up-text{
-  font-size:8px;
+  text-align:left;
+  font-size:7px;
+}
+
+.new-to-text{
+  text-align: left;
+}
+
+.glass{
+  width: 25px;
+  height: 25px;
+  align-items: left;
+  justify-content: left;
+}
+.glass,
+.explore-side {
+    display: inline-block;
+    vertical-align: middle;
+   
 }
