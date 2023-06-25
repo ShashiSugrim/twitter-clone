@@ -24,7 +24,7 @@ export async function addUser(firstName, lastName, topics, username, password)
         {
             console.log("these are the tweets: " + JSON.stringify(doc.data()["tweets"]));
         }
-        return;
+        return false;
     }
     var insertData = 
     {
@@ -42,7 +42,7 @@ export async function addUser(firstName, lastName, topics, username, password)
     }
 
     await docRef.set(insertData);
-
+    return true;
 }
 
 export async function addTweet(username, data)
@@ -89,6 +89,22 @@ export async function addTweet(username, data)
             merge: true
         }
     )
+
+    var tweetName = username + numTweetVar;
+    const batch = db.batch();
+    for(let topic of topicList){
+        const topicRef = db.collection('topics').doc(topic);
+        batch.set(
+            topicRef,
+            {
+                tweets: firebase.firestore.FieldValue.arrayUnion(tweetName)
+            },
+            {
+                merge: true
+            }
+        );
+    }
+    await batch.commit();
 }
 
 export async function deleteTweet(username, tweetNumber) {
@@ -284,14 +300,136 @@ export async function getTopics(tweet, topics=["Music", "Fashion", "Tech", "Spor
     {
         if(parseFloat((JSON.stringify(result["scores"][i])) * 100) > 50)
         {
-            // console.log("the tweet is " + tweet);
-            // console.log("but the topic here is " + JSON.stringify(result["labels"][i]));
-            hTopics.push(JSON.stringify(result["labels"][i]));
+            hTopics.push(result["labels"][i]);
         }
     }
+    
     // console.log("topics are : " + hTopics.toString() );
     return hTopics;
 }
 
+export async function getHomepage(username){
+    // Get user data
+    const userRef = db.collection('users').doc(username);
+    const userDoc = await userRef.get();
+    if(!userDoc.exists) {
+        console.log("User does not exist: " + username);
+        return;
+    }
+    const userData = userDoc.data();
+    
+    let homepageTweets = [];
+    let seenTweetNames = new Set(); // Keep track of tweet names we've already added
 
+    const addTweetNameIfUnique = (tweetNameWithPath) => {
+        // Remove the '/tweets/' prefix from the tweet name
+        let tweetName = tweetNameWithPath.replace('/tweets/', '');
 
+        // If we've already seen this tweet, skip it
+        if (seenTweetNames.has(tweetName)) return;
+        // Otherwise, add it to the list
+        homepageTweets.push(tweetName);
+        seenTweetNames.add(tweetName); // Mark this tweet as seen
+    };
+
+    // Fetch tweets related to the topics the user follows
+    for(let topic of userData.topics){
+        const topicRef = db.collection('topics').doc(topic);
+        const topicDoc = await topicRef.get();
+        if(topicDoc.exists) {
+            const topicData = topicDoc.data();
+            for(let tweetName of topicData.tweets){
+                addTweetNameIfUnique(tweetName);
+            }
+        }
+    }
+
+    // Fetch tweets and retweets from the users the user follows
+    for(let followedUser of userData.following){
+        const followedUserRef = db.collection('users').doc(followedUser);
+        const followedUserDoc = await followedUserRef.get();
+        if(followedUserDoc.exists) {
+            const followedUserData = followedUserDoc.data();
+            for(let tweetName of followedUserData.tweets){
+                addTweetNameIfUnique(tweetName);
+            }
+            for(let retweetName of followedUserData.retweets){
+                addTweetNameIfUnique(retweetName);
+            }
+        }
+    }
+
+    console.log("homepage tweets are: " + JSON.stringify(homepageTweets));
+    return homepageTweets;
+}
+
+export async function getExplore() {
+    // Get reference to tweets collection
+    const tweetsRef = db.collection('tweets');
+
+    // Get all tweets
+    const snapshot = await tweetsRef.get();
+
+    // currently inefficient as it fetches all the tweets into memory then chooses 15 random ones
+    // Put all tweet names in an array
+    const allTweets = [];
+    snapshot.forEach(doc => {
+        allTweets.push(doc.id);
+    });
+
+    // If there are less than or equal to 15 tweets, return all of them
+    if (allTweets.length <= 15) {
+        return allTweets;
+    }
+
+    // If there are more than 15 tweets, pick 15 at random
+    const exploreTweets = [];
+    for (let i = 0; i < 15; i++) {
+        const randomIndex = Math.floor(Math.random() * allTweets.length);
+        exploreTweets.push(allTweets[randomIndex]);
+        // Remove selected tweet from the allTweets array to avoid picking it again
+        allTweets.splice(randomIndex, 1);
+    }
+    console.log("Explore page is " + JSON.stringify(exploreTweets));
+    return exploreTweets;
+}
+
+export async function getTweetData(tweets) {
+    const tweetData = [];
+
+    // Go through each tweet
+    for (let i = 0; i < tweets.length; i++) {
+        const tweetRef = db.collection('tweets').doc(tweets[i]);
+        const doc = await tweetRef.get();
+        
+        if (doc.exists) {
+            const data = doc.data();
+
+            // Extract the name of the user who posted the tweet
+            let username = tweets[i].replace(/[0-9]/g, '');
+            username = username || "N/A";
+
+            // Extract and format the time the tweet was posted
+            let timestamp = new Date(data.time);
+            let timePosted = `${timestamp.getMonth() + 1}/${timestamp.getDate()}/${timestamp.getFullYear()} ${timestamp.getHours()}:${timestamp.getMinutes()}pm`;
+            timePosted = timePosted || "N/A";
+
+            // Extract the number of likes on the tweet
+            let likes = data.likeCt !== undefined ? data.likeCt : "N/A";
+
+            // Extract the topic of the tweet, remove any extra quotes or slashes
+            let topics = Array.isArray(data.topics) ? data.topics.map(topic => topic.replace(/['"\\]+/g, '')).join(', ') : "N/A";
+
+            // Extract the text of the tweet
+            let text = data.data;
+            text = text || "N/A";
+
+            // Add the tweet's data to the array
+            tweetData.push({username, timePosted, likes, topics, text});
+        } else {
+            console.log('No such document!');
+        }
+    }
+
+    return tweetData;
+}
