@@ -87,6 +87,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PreLogin from './PreLogin';
 import PostLogin from './postlogin';
+import SignUp from './SignUp';
 
 function App() {
   return (
@@ -94,6 +95,7 @@ function App() {
       <Routes>
         <Route path="/" element={<PreLogin />} />
         <Route path="/postlogin" element={<PostLogin />} />
+        <Route path="signup" element={<SignUp/>}/>
       </Routes>
     </Router>
   );
