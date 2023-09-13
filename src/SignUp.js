@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import twitterLogo from './twitterlogo.png';
-import './SignUp.css'; // Assuming you have a separate CSS file for SignUp
+// import './SignUp.css'; // Assuming you have a separate CSS file for SignUp
 import SignIn from './SignIn.js';
 
 function SignUp() {
@@ -56,6 +56,9 @@ function SignUp() {
 
   return (
     <div className="App">
+      <>
+        <p>This is signup page</p>
+      </>
       <div className="container">
         <footer className="footer">
           <div className="footer-content">
