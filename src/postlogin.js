@@ -13,8 +13,9 @@ import profile from './profile.png';
 import { useState } from 'react';
 
 import Home from './home';
-import Explore from './explore';
+import Explore from './Explore';
 import Bookmarks from './bookmarks';
+import SignUp from './SignUp';
 
 const routes = [
   {
@@ -28,7 +29,7 @@ const routes = [
   {
     path: '/bookmarks',
     element: <Bookmarks />,
-  },
+  }
 ];
 
 const SearchBar = () => {
