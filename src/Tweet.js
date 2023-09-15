@@ -1,8 +1,13 @@
 import React from 'react'
 
-const Tweet = () => {
+const Tweet = ({title, username, description, time_stamp}) => {
   return (
-    <div>This is a tweet!</div>
+    <>
+    <h2>{title}</h2>
+    <h3>{username}</h3>
+    <div>{description}</div>
+    <h4>{time_stamp}</h4>
+    </>
   )
 }
 
