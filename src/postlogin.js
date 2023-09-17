@@ -10,13 +10,14 @@ import glass from './glass.png';
 import home from './twitterhome.png';
 import bookmark from './bookmark.png';
 import profile from './profile.png';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 import Home from './home';
 import Explore from './Explore';
 import Bookmarks from './bookmarks';
 import SignUp from './SignUp';
 import axios from "axios";
+import Tweet from './Tweet';
 
 const routes = [
   {
@@ -82,7 +83,24 @@ const PostLogin = () => {
     favDialog.current.close();
     // console.log(tweetDesc.current.value);
   }
+  const[tweets, setTweets] = useState([]);
 
+  async function getTweets() {
+    const results = await axios.get("http://localhost:3001/tweets");
+    console.log("Results are " + JSON.stringify(results));
+    setTweets(results.data);
+  }
+  useEffect(()=>{
+    let ignore = false;
+
+    if (!ignore) getTweets();
+
+    return () => {
+      ignore = true;
+    };
+  }
+    , []
+  )
   return (
     <div className="App">
       <dialog ref={favDialog}>
@@ -129,6 +147,8 @@ const PostLogin = () => {
       </div>
       <div className="sidebar two">
        <h2>Home</h2>
+       {tweets? tweets.map((item, index)=>{ return (<><Tweet username={item.username} title={item.title} description={item.description} time_stamp={item.date_created}/><hr/></>)}): null}
+
        </div>
       <div className="sidebar three">
           <div className='search-bar-container'>
