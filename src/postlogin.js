@@ -10,12 +10,13 @@ import glass from './glass.png';
 import home from './twitterhome.png';
 import bookmark from './bookmark.png';
 import profile from './profile.png';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 import Home from './home';
 import Explore from './Explore';
 import Bookmarks from './bookmarks';
 import SignUp from './SignUp';
+import axios from "axios";
 
 const routes = [
   {
@@ -60,9 +61,44 @@ const SearchBar = () => {
 
 const PostLogin = () => {
   const element = useRoutes(routes);
+  const favDialog = useRef(0);
+  const tweetDesc = useRef("");
+  const tweetTitle = useRef("");
+
+  const handleTweet = (event) =>
+  {
+    favDialog.current.showModal();
+  }
+
+  const sendTweet = async (event) =>
+  {
+    let body =     {
+      "title": tweetTitle.current.value,
+      "description": tweetDesc.current.value,
+      "username": "user2"
+  }
+    await axios.post("http://localhost:3001/tweets", body ).then((res)=>{console.log("success!" + res.status)})
+    alert("successully posted tweet!");
+    favDialog.current.close();
+    // console.log(tweetDesc.current.value);
+  }
 
   return (
     <div className="App">
+      <dialog ref={favDialog}>
+  <form>
+    <p>
+      <label for="title">Title</label>
+      <input id="title" ref={tweetTitle}></input>
+      <label for="description">Description</label>
+      <textarea id="description" ref={tweetDesc}></textarea>
+    </p>
+    <div>
+      <button value="cancel" formmethod="dialog">Cancel</button>
+      <button onClick={sendTweet} id="confirmBtn" type="button">Submit Tweet</button>
+    </div>
+  </form>
+</dialog>
       <div className="sidebar one">
         <img className="bird" alt="Twitter Logo" src={twitterLogo} />
         <br />
@@ -86,7 +122,7 @@ const PostLogin = () => {
           <h2 className="profile-sidebar">Profile</h2>
         </Link>
         <br /> <br />
-        <button className="tweet">Tweet</button>
+        <button onClick={handleTweet}className="tweet">Tweet</button>
         <br />
         <br />
         <Link to="/">Go to Prelogin</Link>
